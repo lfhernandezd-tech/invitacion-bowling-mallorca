@@ -31,7 +31,7 @@
       --dia-width: 72%;
       --dia-height: 4.8%;
 
-      /* HORA (contenedor) */
+      /* HORA (contenedor de la pastilla) */
       --hora-top: 74.0%;
       --hora-left: 14%;
       --hora-width: 72%;
@@ -42,6 +42,18 @@
       --confirma-left: 14%;
       --confirma-width: 72%;
       --confirma-height: 5.0%;
+
+      /* ======= FINO PARA LAS DOS HORAS ======= */
+      /* posición y tamaño de cada input dentro de la pastilla */
+      --hora-input-top: 10%;       /* baja el texto dentro de la pastilla */
+      --hora-input-height: 80%;    /* alto dentro de la pastilla */
+      --hora-input-width: 23%;     /* ancho de cada campo */
+      --hora-input-scale: 0.82;    /* tamaño del texto HH:MM */
+
+      /* alineación respecto a los rótulos impresos */
+      --hora-de-left: 33%;         /* “DE LAS” (más grande => más a la derecha) */
+      --hora-a-right: 33%;         /* “A LAS”   (más grande => más a la izquierda) */
+      /* Si ves cruce: baja el width a 22% o mueve  --hora-de-left / --hora-a-right en ±1% */
     }
 
     html, body { margin:0; height:100%; background:#0b0b12; color:#fff; font-family:var(--field-font); }
@@ -70,12 +82,15 @@
     /* ======= HORA: dos inputs internos (DE LAS / A LAS) ======= */
     .hora-inner{ position:absolute; inset:0; }
     .hora-inner input{
-      position:absolute; top:10; bottom:0; height:80%;
-      width:27%;
-      font-size: calc(var(--field-size) * 0.82); /* un poquito más pequeño para que no se salga */
+      position:absolute;
+      top: var(--hora-input-top);
+      height: var(--hora-input-height);
+      width: var(--hora-input-width);
+      font-size: calc(var(--field-size) * var(--hora-input-scale));
+      text-align:center;
     }
-    #horaDe{ left:33%; }   /* mueve “DE LAS” hacia la derecha */
-    #horaA { right:33%; }  /* “A LAS” simétrico a la derecha */
+    #horaDe{ left: var(--hora-de-left); }   /* bajo “DE LAS:” */
+    #horaA { right: var(--hora-a-right); }  /* bajo “A LAS:”  */
 
     .toolbar{
       position:fixed; left:0; right:0; bottom:0; background:rgba(12,12,18,.88); backdrop-filter:blur(6px);
@@ -107,7 +122,7 @@
     </div>
   </div>
 
-  <p class="note">Si algún campo no cae exacto, dime y retoco los porcentajes (–top, –left, –width, –height).</p>
+  <p class="note">Si algún campo no cae exacto, avísame y lo retoco (–top/–left) o muevo las horas en ±1%.</p>
 
   <div class="toolbar">
     <button id="btnPng">Descargar PNG</button>
