@@ -44,16 +44,15 @@
       --confirma-height: 5.0%;
 
       /* ======= FINO PARA LAS DOS HORAS ======= */
-      /* posición y tamaño de cada input dentro de la pastilla */
-      --hora-input-top: 10%;       /* baja el texto dentro de la pastilla */
-      --hora-input-height: 80%;    /* alto dentro de la pastilla */
-      --hora-input-width: 23%;     /* ancho de cada campo */
-      --hora-input-scale: 0.82;    /* tamaño del texto HH:MM */
+      /* tamaño/posición dentro de la pastilla */
+      --hora-input-top: 10%;
+      --hora-input-height: 80%;
+      --hora-input-width: 21%;    /* más angostas */
+      --hora-input-scale: 0.80;   /* texto un poco más pequeño */
 
       /* alineación respecto a los rótulos impresos */
-      --hora-de-left: 33%;         /* “DE LAS” (más grande => más a la derecha) */
-      --hora-a-right: 33%;         /* “A LAS”   (más grande => más a la izquierda) */
-      /* Si ves cruce: baja el width a 22% o mueve  --hora-de-left / --hora-a-right en ±1% */
+      --hora-de-left: 35%;        /* “DE LAS:” */
+      --hora-a-right: 24%;        /* “A LAS:” más a la derecha */
     }
 
     html, body { margin:0; height:100%; background:#0b0b12; color:#fff; font-family:var(--field-font); }
@@ -122,7 +121,7 @@
     </div>
   </div>
 
-  <p class="note">Si algún campo no cae exacto, avísame y lo retoco (–top/–left) o muevo las horas en ±1%.</p>
+  <p class="note">Si aún ves 1–2 mm de desfase en las horas, mueve solo: <code>--hora-de-left</code>, <code>--hora-a-right</code> (±1%), o baja <code>--hora-input-width</code> a 20%.</p>
 
   <div class="toolbar">
     <button id="btnPng">Descargar PNG</button>
