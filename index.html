@@ -3,29 +3,37 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Invitación Bowling – Generador (Canvas)</title>
+<title>Invitación Bowling – Generador HD (Canvas 3×)</title>
 <style>
   :root{
     --maxw: 520px;
     --ui-bg: #0b0b12;
+    --accent:#7c3aed;
   }
-  html,body{margin:0;height:100%;background:var(--ui-bg);color:#fff;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif}
-  .wrap{max-width:var(--maxw);margin:0 auto;padding:14px 14px 110px}
+  html,body{margin:0;height:100%;background:var(--ui-bg);color:#fff;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+            -webkit-text-size-adjust:100%;text-size-adjust:100%}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:14px 14px 120px}
   .card{width:100%;position:relative}
   canvas{width:100%;height:auto;border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.5);background:#000}
-  .panel{margin-top:12px;display:grid;gap:10px}
-  .panel label{font-size:14px;opacity:.9}
-  .panel input{
+  .panel{margin-top:12px;display:grid;gap:8px}
+  .row{display:grid;grid-template-columns:1fr;gap:6px}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  label{font-size:12px;opacity:.85}
+  input[type="text"]{
     width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.18);
     background:#1b1b25;color:#fff;font-weight:600;outline:none;
   }
-  .panel small{opacity:.65}
+  details{background:#12121a;border:1px solid rgba(255,255,255,.12);border-radius:10px;padding:8px}
+  details summary{cursor:pointer;font-weight:700}
+  .ctrls{display:grid;grid-template-columns:repeat(6,1fr);gap:6px;margin-top:8px}
+  .ctrls button{padding:8px 6px;border:none;border-radius:8px;background:#2a2a35;color:#fff;cursor:pointer}
+  .ctrls small{grid-column:1/-1;opacity:.7}
   .toolbar{position:fixed;left:0;right:0;bottom:0;background:rgba(12,12,18,.88);backdrop-filter:blur(6px);
     border-top:1px solid rgba(255,255,255,.08);padding:10px 12px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
-  button{appearance:none;border:none;border-radius:12px;padding:10px 14px;font-weight:700;cursor:pointer;background:#7c3aed;color:#fff;
+  button.main{appearance:none;border:none;border-radius:12px;padding:10px 14px;font-weight:700;cursor:pointer;background:var(--accent);color:#fff;
     box-shadow:0 6px 20px rgba(124,58,237,.35)}
-  button.secondary{background:#2a2a35;box-shadow:none}
-  button:active{transform:translateY(1px)}
+  button.secondary{appearance:none;border:none;border-radius:12px;padding:10px 14px;font-weight:700;cursor:pointer;background:#2a2a35;color:#fff}
+  .note{font-size:12px;opacity:.75;text-align:center;margin:8px auto 0;max-width:520px}
 </style>
 </head>
 <body>
@@ -34,165 +42,243 @@
       <canvas id="cv" width="1080" height="2800"></canvas>
     </div>
 
+    <!-- FORMULARIO -->
     <div class="panel">
-      <div>
-        <label for="soy">Soy</label>
-        <input id="soy" placeholder="Tu nombre"/>
+      <div class="row">
+        <label for="soy">SOY</label>
+        <input id="soy" type="text" placeholder="Tu nombre"/>
       </div>
-      <div>
-        <label for="nombre">Nombre del invitado</label>
-        <input id="nombre" placeholder="Nombre del invitado"/>
+      <div class="row">
+        <label for="nombre">NOMBRE (invitado)</label>
+        <input id="nombre" type="text" placeholder="Nombre del invitado"/>
       </div>
-      <div>
-        <label for="dia">El día</label>
-        <input id="dia" placeholder="DD/MM/AAAA"/>
+      <div class="row">
+        <label for="dia">EL DÍA</label>
+        <input id="dia" type="text" placeholder="DD/MM/AAAA"/>
       </div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <div class="row2">
         <div>
-          <label for="horaDe">Hora – De las</label>
-          <input id="horaDe" placeholder="HH:MM"/>
+          <label for="horaDe">HORA — DE LAS</label>
+          <input id="horaDe" type="text" placeholder="HH:MM"/>
         </div>
         <div>
-          <label for="horaA">Hora – A las</label>
-          <input id="horaA" placeholder="HH:MM"/>
+          <label for="horaA">HORA — A LAS</label>
+          <input id="horaA" type="text" placeholder="HH:MM"/>
         </div>
       </div>
-      <div>
-        <label for="confirma">Confirma al</label>
-        <input id="confirma" placeholder="Teléfono o Email"/>
+      <div class="row">
+        <label for="confirma">CONFIRMA AL</label>
+        <input id="confirma" type="text" placeholder="Teléfono o Email"/>
       </div>
-      <small>Completa los campos. La previsualización se actualiza arriba y puedes descargar PNG o PDF.</small>
+
+      <!-- Controles de alineación (no-code) -->
+      <details>
+        <summary>⚙️ Ajustar posiciones (opcional)</summary>
+        <div class="ctrls" id="ctrls"></div>
+        <small>Tip: ajustes de 0.2% ≈ 5–6 px. Los cambios se guardan en tu navegador.</small>
+      </details>
     </div>
   </div>
 
+  <p class="note">Exporta en alta definición. Si cambias de móvil, puedes reajustar con los controles.</p>
+
   <div class="toolbar">
-    <button id="btnPng">Descargar PNG</button>
+    <button id="btnPng" class="main">Descargar PNG</button>
     <button id="btnPdf" class="secondary">Descargar PDF</button>
     <button id="btnShare" class="secondary">Compartir</button>
+    <button id="btnReset" class="secondary">Restablecer posiciones</button>
   </div>
 
 <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 <script>
-const W = 1080, H = 2800;
-const cfg = {
-  bgUrl: 'bg.png',
-  boxes: {
-    soy:      {x: 0.10, y: 0.437, w: 0.80, h: 0.047},
-    nombre:   {x: 0.14, y: 0.606, w: 0.72, h: 0.049},
-    dia:      {x: 0.14, y: 0.674, w: 0.72, h: 0.048},
-    hora:     {x: 0.14, y: 0.740, w: 0.72, h: 0.049},
-    confirma: {x: 0.14, y: 0.811, w: 0.72, h: 0.050},
-  },
-  horaDe: { left: 0.39, width: 0.20 },
-  horaA:  { right: 0.19, width: 0.20 },
-  maxFont: 70,
-  minFont: 32,
-  font: 'bold {px}px Arial, Helvetica, sans-serif',
-  color: '#000000',
-  placeholderColor: '#777777'
+/* ===== CONFIGURACIÓN ===== */
+const BASE_W = 1080, BASE_H = 2800;
+const SCALE   = 3; // lienzo 3× para exportar nítido
+
+// cajas en % (por defecto, ya bastante cerca del diseño)
+const defaults = {
+  soy:      {x:0.10,y:0.437,w:0.80,h:0.047},
+  nombre:   {x:0.14,y:0.606,w:0.72,h:0.049},
+  dia:      {x:0.14,y:0.674,w:0.72,h:0.048},
+  hora:     {x:0.14,y:0.740,w:0.72,h:0.049},
+  confirma: {x:0.14,y:0.811,w:0.72,h:0.050},
+  horaDeLeft:0.39,  // % dentro de la caja HORA (desde la izquierda)
+  horaA_right:0.19, // % dentro de la caja HORA (desde la derecha)
+  horaWidth:0.20    // % del ancho de la caja HORA
 };
 
+const pos = loadPositions();
+
 const cv = document.getElementById('cv');
+cv.width  = BASE_W * SCALE;
+cv.height = BASE_H * SCALE;
 const ctx = cv.getContext('2d');
 
 const bg = new Image();
-bg.onload = ()=> draw();
-bg.src = cfg.bgUrl;
+bg.onload = () => draw();
+bg.src = 'bg.png';
 
-function pxBox(b){ return { x: Math.round(b.x * W), y: Math.round(b.y * H), w: Math.round(b.w * W), h: Math.round(b.h * H) }; }
+/* ===== UI de ajuste ===== */
+const fields = ['soy','nombre','dia','confirma'];
+const ctrls = document.getElementById('ctrls');
+fields.forEach(key=>{
+  ctrls.appendChild(makeControl(key, true));
+});
+ctrls.appendChild(makeControl('hora', true, true)); // tiene subposiciones
 
+const btnReset = document.getElementById('btnReset');
+btnReset.onclick = ()=>{ localStorage.removeItem('inv_bowling_pos'); Object.assign(pos, JSON.parse(JSON.stringify(defaults))); draw(); buildControls(); };
+
+function makeControl(key, allowSize=false, isHora=false){
+  const wrap = document.createElement('div');
+  wrap.style.gridColumn = '1 / -1';
+  const title = document.createElement('div');
+  title.style.margin = '6px 0 4px'; title.style.fontWeight = '700';
+  title.textContent = `• ${key.toUpperCase()}`;
+  wrap.appendChild(title);
+
+  const grid = document.createElement('div'); grid.className = 'ctrls';
+  const delta = 0.002; // 0.2%
+
+  function btn(txt, cb){ const b=document.createElement('button'); b.textContent=txt; b.onclick=()=>{ cb(); savePositions(); draw(); }; return b; }
+
+  if(!isHora){
+    grid.append(
+      btn('←', ()=> pos[key].x = clamp0to1(pos[key].x - delta)),
+      btn('→', ()=> pos[key].x = clamp0to1(pos[key].x + delta)),
+      btn('↑', ()=> pos[key].y = clamp0to1(pos[key].y - delta)),
+      btn('↓', ()=> pos[key].y = clamp0to1(pos[key].y + delta)),
+      btn('− ancho', ()=> pos[key].w = clamp0to1(pos[key].w - delta)),
+      btn('+ ancho', ()=> pos[key].w = clamp0to1(pos[key].w + delta)),
+    );
+  }else{
+    grid.append(
+      btn('DE ←', ()=> pos.horaDeLeft = clamp0to1(pos.horaDeLeft - delta)),
+      btn('DE →', ()=> pos.horaDeLeft = clamp0to1(pos.horaDeLeft + delta)),
+      btn('A  →', ()=> pos.horaA_right = clamp0to1(pos.horaA_right - delta)), /* menor = más a la derecha */
+      btn('A  ←', ()=> pos.horaA_right = clamp0to1(pos.horaA_right + delta)),
+      btn('− ancho', ()=> pos.horaWidth = clamp0to1(pos.horaWidth - delta)),
+      btn('+ ancho', ()=> pos.horaWidth = clamp0to1(pos.horaWidth + delta)),
+    );
+  }
+  const hint = document.createElement('small');
+  hint.textContent = 'Ajuste fino: 0.2% ≈ 5–6 px';
+  grid.append(hint);
+  wrap.appendChild(grid);
+  return wrap;
+}
+function buildControls(){ ctrls.innerHTML=''; fields.forEach(k=>ctrls.appendChild(makeControl(k,true))); ctrls.appendChild(makeControl('hora',true,true)); }
+
+/* ===== DIBUJO HD ===== */
+function pxBox(b){
+  return {
+    x: Math.round(b.x * BASE_W * SCALE),
+    y: Math.round(b.y * BASE_H * SCALE),
+    w: Math.round(b.w * BASE_W * SCALE),
+    h: Math.round(b.h * BASE_H * SCALE)
+  };
+}
 function fitText(text, maxWidth, maxPx, minPx){
   let size = maxPx;
   while(size > minPx){
-    ctx.font = cfg.font.replace('{px}', size);
-    const w = ctx.measureText(text).width;
-    if (w <= maxWidth * 0.92) break;
+    ctx.font = `bold ${size}px Arial, Helvetica, sans-serif`;
+    if (ctx.measureText(text).width <= maxWidth * 0.92) break;
     size -= 1;
   }
   return size;
 }
-
-function drawBoxText(box, text, placeholder){
+function drawCentered(box, text, placeholder, maxFs=72, minFs=32){
   const b = pxBox(box);
-  const t = (text || '').trim();
-  const show = t.length ? t : (placeholder || '');
-  const color = t.length ? cfg.color : cfg.placeholderColor;
-
-  const fontSize = fitText(show, b.w, cfg.maxFont, cfg.minFont);
-  ctx.font = cfg.font.replace('{px}', fontSize);
+  const t = (text||'').trim();
+  const s = t || placeholder;
+  const color = t ? '#000' : '#777';
+  const fs = fitText(s, b.w, maxFs*SCALE, minFs*SCALE);
+  ctx.font = `bold ${fs}px Arial, Helvetica, sans-serif`;
   ctx.fillStyle = color;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(show, b.x + b.w/2, b.y + b.h/2);
+  ctx.fillText(s, b.x + b.w/2, b.y + b.h/2);
 }
 
 function draw(){
-  ctx.clearRect(0,0,W,H);
-  ctx.drawImage(bg, 0, 0, W, H);
+  // fondo nítido
+  ctx.clearRect(0,0,cv.width,cv.height);
+  ctx.drawImage(bg, 0, 0, cv.width, cv.height);
 
-  const val = id => document.getElementById(id).value;
+  const v = id => document.getElementById(id).value;
 
-  drawBoxText(cfg.boxes.soy, val('soy'), 'Escribe tu nombre');
-  drawBoxText(cfg.boxes.nombre, val('nombre'), 'Nombre del invitado');
-  drawBoxText(cfg.boxes.dia, val('dia'), 'DD/MM/AAAA');
+  drawCentered(pos.soy, v('soy'), 'Escribe tu nombre');
+  drawCentered(pos.nombre, v('nombre'), 'Nombre del invitado');
+  drawCentered(pos.dia, v('dia'), 'DD/MM/AAAA');
 
-  const hb = pxBox(cfg.boxes.hora);
-  // De las
-  const deW = Math.round(cfg.horaDe.width * hb.w);
-  const deX = Math.round(hb.x + cfg.horaDe.left * hb.w + deW/2);
-  const hourFontMax = Math.round(cfg.maxFont * 0.82);
-  const hourMin = Math.round(cfg.minFont * 0.82);
-  const deText = (val('horaDe') || '').trim() || 'HH:MM';
-  ctx.font = cfg.font.replace('{px}', fitText(deText, deW, hourFontMax, hourMin));
-  ctx.fillStyle = (val('horaDe')||'').trim() ? cfg.color : cfg.placeholderColor;
+  // HORA: dos cajas dentro de la caja 'hora'
+  const hb = pxBox(pos.hora);
+  const hourMax = 60*SCALE, hourMin = 28*SCALE;
+
+  // DE LAS
+  const deW = Math.round(pos.horaWidth * hb.w);
+  const deX = Math.round(hb.x + pos.horaDeLeft * hb.w + deW/2);
+  const deT = (v('horaDe')||'').trim() || 'HH:MM';
+  ctx.font = `bold ${fitText(deT, deW, hourMax, hourMin)}px Arial, Helvetica, sans-serif`;
+  ctx.fillStyle = (v('horaDe')||'').trim() ? '#000' : '#777';
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText(deText, deX, hb.y + hb.h/2);
+  ctx.fillText(deT, deX, hb.y + hb.h/2);
 
-  // A las
-  const aW = Math.round(cfg.horaA.width * hb.w);
-  const aX = Math.round(hb.x + hb.w - (cfg.horaA.right * hb.w) - aW/2);
-  const aText = (val('horaA') || '').trim() || 'HH:MM';
-  ctx.font = cfg.font.replace('{px}', fitText(aText, aW, hourFontMax, hourMin));
-  ctx.fillStyle = (val('horaA')||'').trim() ? cfg.color : cfg.placeholderColor;
-  ctx.fillText(aText, aX, hb.y + hb.h/2);
+  // A LAS  (se acerca moviendo 'horaA_right' a menor valor)
+  const aW = Math.round(pos.horaWidth * hb.w);
+  const aX = Math.round(hb.x + hb.w - (pos.horaA_right * hb.w) - aW/2);
+  const aT = (v('horaA')||'').trim() || 'HH:MM';
+  ctx.font = `bold ${fitText(aT, aW, hourMax, hourMin)}px Arial, Helvetica, sans-serif`;
+  ctx.fillStyle = (v('horaA')||'').trim() ? '#000' : '#777';
+  ctx.fillText(aT, aX, hb.y + hb.h/2);
 
-  drawBoxText(cfg.boxes.confirma, val('confirma'), 'Teléfono o Email');
+  drawCentered(pos.confirma, v('confirma'), 'Teléfono o Email');
+
+  savePositions();
 }
 
-['soy','nombre','dia','horaDe','horaA','confirma'].forEach(id=>{
-  const el = document.getElementById(id);
-  el.addEventListener('input', draw);
-  el.addEventListener('change', draw);
-});
-
-document.getElementById('btnPng').addEventListener('click', ()=>{
+/* ===== EXPORTAR HD ===== */
+document.getElementById('btnPng').onclick = ()=>{
   const a = document.createElement('a');
   a.download = `invitacion-bowling-${Date.now()}.png`;
   a.href = cv.toDataURL('image/png');
   a.click();
-});
-
-document.getElementById('btnPdf').addEventListener('click', ()=>{
+};
+document.getElementById('btnPdf').onclick = ()=>{
   const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({orientation:'portrait', unit:'px', format:[W, H]});
-  doc.addImage(cv.toDataURL('image/jpeg', 0.98), 'JPEG', 0, 0, W, H);
+  const doc = new jsPDF({orientation:'portrait', unit:'px', format:[BASE_W*SCALE, BASE_H*SCALE]});
+  doc.addImage(cv.toDataURL('image/jpeg', 0.98), 'JPEG', 0, 0, BASE_W*SCALE, BASE_H*SCALE);
   doc.save(`invitacion-bowling-${Date.now()}.pdf`);
-});
-
-document.getElementById('btnShare').addEventListener('click', async ()=>{
+};
+document.getElementById('btnShare').onclick = async()=>{
   try{
     const blob = await (await fetch(cv.toDataURL('image/png'))).blob();
     const file = new File([blob], `invitacion-bowling.png`, { type:'image/png' });
     if(navigator.canShare && navigator.canShare({ files:[file] })){
       await navigator.share({ files:[file], title:'Invitación Bowling', text:'Te comparto la invitación ✨' });
     }else{
-      alert('Tu navegador no soporta compartir archivos. Usa “Descargar PNG”.');
+      alert('Si tu móvil no permite compartir, usa “Descargar PNG”.');
     }
-  }catch(e){
-    alert('No se pudo abrir la hoja de compartir. Usa “Descargar PNG”.');
-  }
+  }catch(e){ alert('No se pudo abrir la hoja de compartir. Usa “Descargar PNG”.'); }
+};
+
+/* ===== PERSISTENCIA Y UTILES ===== */
+function clamp0to1(v){ return Math.max(0, Math.min(1, v)); }
+function loadPositions(){
+  const saved = localStorage.getItem('inv_bowling_pos');
+  if(saved){ try{ return JSON.parse(saved); }catch(_){ } }
+  return JSON.parse(JSON.stringify(defaults));
+}
+function savePositions(){ localStorage.setItem('inv_bowling_pos', JSON.stringify(pos)); }
+
+/* Eventos de formulario → redibuja */
+['soy','nombre','dia','horaDe','horaA','confirma'].forEach(id=>{
+  const el = document.getElementById(id);
+  el.addEventListener('input', draw);
+  el.addEventListener('change', draw);
 });
 
+/* primer render */
 draw();
 </script>
 </body>
