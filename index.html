@@ -12,38 +12,36 @@
       --field-color: #111;
       --field-placeholder: #777;
 
-      /* ======= POSICIONES (porcentaje) AJUSTABLES ======= */
-      /* Campo SOY */
-      --soy-top: 46.8%;
-      --soy-left: 12%;
-      --soy-width: 76%;
-      --soy-height: 4.8%;
+      /* ======= POSICIONES (porcentaje) ======= */
+      /* SOY (bajado) */
+      --soy-top: 43.7%;
+      --soy-left: 10%;
+      --soy-width: 80%;
+      --soy-height: 4.7%;
 
-      /* Campo NOMBRE */
+      /* NOMBRE (ok) */
       --nombre-top: 60.6%;
       --nombre-left: 14%;
       --nombre-width: 72%;
       --nombre-height: 4.9%;
 
-      /* Campo EL DÍA */
-      --dia-top: 68.0%;
+      /* EL DÍA (subido) */
+      --dia-top: 67.4%;
       --dia-left: 14%;
       --dia-width: 72%;
-      --dia-height: 4.9%;
+      --dia-height: 4.8%;
 
-      /* Campo HORA - DE LAS / A LAS */
-      --hora-top: 73.6%;
+      /* HORA (contenedor) */
+      --hora-top: 74.0%;
       --hora-left: 14%;
       --hora-width: 72%;
-      --hora-height: 5.2%;
-      --hora-gap: 28%;   /* separación entre los dos campos internos */
-      --hora-col-width: 6%; /* ancho de cada input interno dentro de la pastilla */
+      --hora-height: 4.9%;
 
-      /* Campo CONFIRMA AL */
-      --confirma-top: 80.8%;
+      /* CONFIRMA AL (subido) */
+      --confirma-top: 81.1%;
       --confirma-left: 14%;
       --confirma-width: 72%;
-      --confirma-height: 5.2%;
+      --confirma-height: 5.0%;
     }
 
     html, body { margin:0; height:100%; background:#0b0b12; color:#fff; font-family:var(--field-font); }
@@ -53,6 +51,7 @@
       background-image:url('bg.png'); background-size:cover; background-position:center;
       border-radius:16px; overflow:hidden; box-shadow:0 12px 40px rgba(0,0,0,.5);
     }
+
     .field{ position:absolute; }
     .field input{
       width:100%; height:100%; box-sizing:border-box; background:transparent; border:none; outline:none;
@@ -68,11 +67,15 @@
     .hora     { top: var(--hora-top); left: var(--hora-left); width: var(--hora-width); height: var(--hora-height); }
     .confirma { top: var(--confirma-top); left: var(--confirma-left); width: var(--confirma-width); height: var(--confirma-height); }
 
-    /* Dos inputs dentro de la pastilla de HORA */
-    .hora-inner{ position:absolute; top:0; bottom:0; display:flex; align-items:center; justify-content:space-between; width:100%; }
+    /* ======= HORA: dos inputs internos (DE LAS / A LAS) ======= */
+    .hora-inner{ position:absolute; inset:0; }
     .hora-inner input{
-      width: var(--hora-col-width);
+      position:absolute; top:0; bottom:0;
+      width:27%;
+      font-size: calc(var(--field-size) * 0.86); /* un poquito más pequeño para que no se salga */
     }
+    #horaDe{ left:18%; }   /* mueve “DE LAS” hacia la derecha */
+    #horaA { right:18%; }  /* “A LAS” simétrico a la derecha */
 
     .toolbar{
       position:fixed; left:0; right:0; bottom:0; background:rgba(12,12,18,.88); backdrop-filter:blur(6px);
@@ -96,7 +99,7 @@
       <div class="field hora">
         <div class="hora-inner">
           <input id="horaDe" maxlength="10" placeholder="HH:MM" />
-          <input id="horaA" maxlength="10" placeholder="HH:MM" />
+          <input id="horaA"  maxlength="10" placeholder="HH:MM" />
         </div>
       </div>
 
@@ -104,7 +107,7 @@
     </div>
   </div>
 
-  <p class="note">Si algún campo no cae exacto, dime y ajusto las variables en el CSS (–top, –left, –width, –height).</p>
+  <p class="note">Si algún campo no cae exacto, dime y retoco los porcentajes (–top, –left, –width, –height).</p>
 
   <div class="toolbar">
     <button id="btnPng">Descargar PNG</button>
