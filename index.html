@@ -1,0 +1,172 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Invitación Bowling – Editor móvil</title>
+  <style>
+    :root{
+      --bg-url: url('mallorca-bowling-bg.png');
+
+      /* Ajusta posiciones si algo no cae exacto */
+      --soy-top: 19%;
+      --soy-left: 10%;
+      --soy-width: 80%;
+      --soy-height: 6.8%;
+
+      --nombre-top: 45.8%;
+      --nombre-left: 25%;
+      --nombre-width: 50%;
+      --nombre-height: 6.3%;
+
+      --dia-top: 57.8%;
+      --dia-left: 25%;
+      --dia-width: 50%;
+      --dia-height: 6.2%;
+
+      --hora-de-top: 69.2%;
+      --hora-de-left: 25%;
+      --hora-de-width: 23%;
+      --hora-de-height: 6.2%;
+
+      --hora-a-top: 69.2%;
+      --hora-a-left: 52%;
+      --hora-a-width: 23%;
+      --hora-a-height: 6.2%;
+
+      --confirma-top: 83.0%;
+      --confirma-left: 25%;
+      --confirma-width: 50%;
+      --confirma-height: 6.2%;
+
+      --field-font: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      --field-size: clamp(14px, 2.6vw, 22px);
+      --field-color: #111;
+      --field-placeholder: #777;
+    }
+
+    html, body {
+      margin: 0; height: 100%; background:#0b0b12; color:#fff; font-family: var(--field-font);
+    }
+
+    .wrap {
+      max-width: 520px;
+      margin: 0 auto; padding: 14px 14px 90px;
+    }
+
+    .card {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1080 / 1920;
+      background-image: var(--bg-url);
+      background-size: cover;
+      background-position: center;
+      border-radius: 16px; overflow: hidden; box-shadow: 0 12px 40px rgba(0,0,0,.5);
+    }
+
+    .field { position: absolute; }
+    .field input {
+      width: 100%; height: 100%; box-sizing: border-box;
+      background: transparent;
+      border: none; outline: none;
+      text-align: center; color: var(--field-color);
+      font-family: var(--field-font); font-size: var(--field-size);
+      padding: 0 12px; font-weight: 700; letter-spacing: .3px;
+    }
+    .field input::placeholder { color: var(--field-placeholder); font-weight: 500; }
+
+    .soy      { top: var(--soy-top);      left: var(--soy-left);      width: var(--soy-width);      height: var(--soy-height); }
+    .nombre   { top: var(--nombre-top);   left: var(--nombre-left);   width: var(--nombre-width);   height: var(--nombre-height); }
+    .dia      { top: var(--dia-top);      left: var(--dia-left);      width: var(--dia-width);      height: var(--dia-height); }
+    .hora-de  { top: var(--hora-de-top);  left: var(--hora-de-left);  width: var(--hora-de-width);  height: var(--hora-de-height); }
+    .hora-a   { top: var(--hora-a-top);   left: var(--hora-a-left);   width: var(--hora-a-width);   height: var(--hora-a-height); }
+    .confirma { top: var(--confirma-top); left: var(--confirma-left); width: var(--confirma-width); height: var(--confirma-height); }
+
+    .toolbar {
+      position: fixed; left: 0; right: 0; bottom: 0; background: rgba(12,12,18,.88);
+      backdrop-filter: blur(6px); border-top: 1px solid rgba(255,255,255,.08);
+      padding: 10px 12px; display: flex; gap: 8px; justify-content: center; flex-wrap: wrap;
+    }
+    button {
+      appearance: none; border: none; border-radius: 12px; padding: 10px 14px; font-weight: 700; cursor: pointer;
+      background: #7c3aed; color:#fff; box-shadow: 0 6px 20px rgba(124,58,237,.35);
+    }
+    button.secondary { background:#2a2a35; box-shadow:none; }
+    button:active { transform: translateY(1px); }
+    .note { font-size: 12px; opacity:.8; text-align:center; margin: 8px auto 4px; max-width:520px; }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div id="card" class="card" aria-label="Invitación editable">
+      <div class="field soy"><input id="soy" maxlength="40" placeholder="Escribe tu nombre"/></div>
+      <div class="field nombre"><input id="nombre" maxlength="40" placeholder="Nombre del invitado"/></div>
+      <div class="field dia"><input id="dia" maxlength="20" placeholder="DD/MM/AAAA"/></div>
+      <div class="field hora-de"><input id="horaDe" maxlength="10" placeholder="HH:MM"/></div>
+      <div class="field hora-a"><input id="horaA" maxlength="10" placeholder="HH:MM"/></div>
+      <div class="field confirma"><input id="confirma" maxlength="40" placeholder="Teléfono o Email"/></div>
+    </div>
+  </div>
+
+  <p class="note">Consejo: abre este enlace desde el móvil y usa los botones de abajo para descargar PNG/PDF o compartir.</p>
+
+  <div class="toolbar">
+    <button id="btnPng">Descargar PNG</button>
+    <button id="btnPdf" class="secondary">Descargar PDF</button>
+    <button id="btnShare" class="secondary">Compartir</button>
+    <button id="btnClear" class="secondary">Limpiar</button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script>
+    const card = document.getElementById('card');
+
+    async function captureCard(){
+      if (document.activeElement && document.activeElement.blur) document.activeElement.blur();
+      return await html2canvas(card, {
+        scale: window.devicePixelRatio > 1 ? 2 : 1,
+        useCORS: true,
+        backgroundColor: null
+      });
+    }
+
+    document.getElementById('btnPng').addEventListener('click', async ()=>{
+      const canvas = await captureCard();
+      const link = document.createElement('a');
+      link.download = `invitacion-bowling-${Date.now()}.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    });
+
+    document.getElementById('btnPdf').addEventListener('click', async ()=>{
+      const canvas = await captureCard();
+      const imgData = canvas.toDataURL('image/jpeg', 0.98);
+      const { jsPDF } = window.jspdf;
+      const doc = new jsPDF({ orientation:'portrait', unit:'px', format:[canvas.width, canvas.height] });
+      doc.addImage(imgData, 'JPEG', 0, 0, canvas.width, canvas.height);
+      doc.save(`invitacion-bowling-${Date.now()}.pdf`);
+    });
+
+    document.getElementById('btnShare').addEventListener('click', async ()=>{
+      try{
+        const canvas = await captureCard();
+        const blob = await (await fetch(canvas.toDataURL('image/png'))).blob();
+        const file = new File([blob], `invitacion-bowling.png`, { type: 'image/png' });
+        if(navigator.canShare && navigator.canShare({ files:[file] })){
+          await navigator.share({ files:[file], title:'Invitación Bowling', text:'Te comparto la invitación ✨' });
+        }else{
+          alert('Tu navegador no soporta compartir archivos. Usa “Descargar PNG” y envíalo manualmente.');
+        }
+      }catch(err){
+        console.error(err);
+        alert('No se pudo abrir la hoja de compartir. Descarga el PNG y compártelo manualmente.');
+      }
+    });
+
+    document.getElementById('btnClear').addEventListener('click', ()=>{
+      ['soy','nombre','dia','horaDe','horaA','confirma'].forEach(id=>document.getElementById(id).value='');
+    });
+  </script>
+</body>
+</html>
