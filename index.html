@@ -8,12 +8,12 @@
     :root{
       --ratio: 1080 / 2800;
       --field-font: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-      --field-size: clamp(16px, 2.3vw, 28px);
+      --field-size: clamp(16px, 2.6vw, 28px);
       --field-color: #111;
       --field-placeholder: #777;
 
       /* ======= POSICIONES (porcentaje) ======= */
-      /* SOY (bajado) */
+      /* SOY */
       --soy-top: 43.7%;
       --soy-left: 10%;
       --soy-width: 80%;
@@ -44,18 +44,14 @@
       --confirma-height: 5.0%;
 
       /* ======= FINO PARA LAS DOS HORAS ======= */
-      /* tamaño/posición dentro de la pastilla */
-      --hora-input-top: 10%;
-      --hora-input-height: 80%;
-      --hora-input-width: 21%;    /* más angostas */
-      --hora-input-scale: 0.80;   /* texto un poco más pequeño */
-
-      /* alineación respecto a los rótulos impresos */
-      --hora-de-left: 35%;        /* “DE LAS:” */
-      --hora-a-right: 24%;        /* “A LAS:” más a la derecha */
+      --hora-input-width: 20%;     /* más angostas para no tocar los rótulos */
+      --hora-input-scale: 0.82;    /* tamaño del texto HH:MM */
+      --hora-de-left: 39%;         /* “DE LAS:” más a la derecha */
+      --hora-a-right: 19%;         /* “A LAS:” más a la derecha */
     }
 
-    html, body { margin:0; height:100%; background:#0b0b12; color:#fff; font-family:var(--field-font); }
+    html, body { margin:0; height:100%; background:#0b0b12; color:#fff; font-family:var(--field-font);
+                 -webkit-text-size-adjust:100%; text-size-adjust:100%; }
     .wrap { max-width:520px; margin:0 auto; padding:14px 14px 100px; }
     .card{
       position:relative; width:100%; aspect-ratio: var(--ratio);
@@ -63,11 +59,13 @@
       border-radius:16px; overflow:hidden; box-shadow:0 12px 40px rgba(0,0,0,.5);
     }
 
-    .field{ position:absolute; }
+    /* Campos: centrado vertical homogéneo en todos los móviles */
+    .field{ position:absolute; display:flex; align-items:center; justify-content:center; }
     .field input{
-      width:100%; height:100%; box-sizing:border-box; background:transparent; border:none; outline:none;
-      text-align:center; color:var(--field-color); font-family:var(--field-font); font-size: var(--field-size);
-      padding:0 12px; font-weight:700; letter-spacing:.3px;
+      width:100%; background:transparent; border:none; outline:none;
+      color:var(--field-color); font-family:var(--field-font); font-size: var(--field-size);
+      padding:0 12px; font-weight:700; letter-spacing:.3px; line-height:1.1;
+      text-align:center;
     }
     .field input::placeholder{ color:var(--field-placeholder); font-weight:500; }
 
@@ -81,15 +79,13 @@
     /* ======= HORA: dos inputs internos (DE LAS / A LAS) ======= */
     .hora-inner{ position:absolute; inset:0; }
     .hora-inner input{
-      position:absolute;
-      top: var(--hora-input-top);
-      height: var(--hora-input-height);
+      position:absolute; top:50%; transform:translateY(-50%);   /* centro vertical exacto */
       width: var(--hora-input-width);
       font-size: calc(var(--field-size) * var(--hora-input-scale));
       text-align:center;
     }
-    #horaDe{ left: var(--hora-de-left); }   /* bajo “DE LAS:” */
-    #horaA { right: var(--hora-a-right); }  /* bajo “A LAS:”  */
+    #horaDe{ left: var(--hora-de-left); }    /* bajo “DE LAS:” */
+    #horaA { right: var(--hora-a-right); }   /* bajo “A LAS:”  */
 
     .toolbar{
       position:fixed; left:0; right:0; bottom:0; background:rgba(12,12,18,.88); backdrop-filter:blur(6px);
@@ -121,7 +117,7 @@
     </div>
   </div>
 
-  <p class="note">Si aún ves 1–2 mm de desfase en las horas, mueve solo: <code>--hora-de-left</code>, <code>--hora-a-right</code> (±1%), o baja <code>--hora-input-width</code> a 20%.</p>
+  <p class="note">Si aún falta 1–2 mm: mueve solo <code>--hora-de-left</code> y <code>--hora-a-right</code> (±1%), o <code>--hora-input-width</code> (20–22%).</p>
 
   <div class="toolbar">
     <button id="btnPng">Descargar PNG</button>
@@ -171,3 +167,4 @@
   </script>
 </body>
 </html>
+
