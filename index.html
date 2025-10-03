@@ -3,21 +3,24 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Invitación Bowling – Generador HD (Canvas 3×)</title>
+<title>Invitación Bowling – Generador HD</title>
 <style>
   :root{
     --maxw: 520px;
     --ui-bg: #0b0b12;
     --accent:#7c3aed;
   }
-  html,body{margin:0;height:100%;background:var(--ui-bg);color:#fff;font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
-            -webkit-text-size-adjust:100%;text-size-adjust:100%}
+  html,body{
+    margin:0;height:100%;background:var(--ui-bg);color:#fff;
+    font-family:system-ui,-apple-system,Segoe UI,Roboto,Helvetica,Arial,sans-serif;
+    -webkit-text-size-adjust:100%; text-size-adjust:100%;
+  }
   .wrap{max-width:var(--maxw);margin:0 auto;padding:14px 14px 120px}
+  h2{margin:16px 0 10px;font-size:18px}
   .card{width:100%;position:relative}
   canvas{width:100%;height:auto;border-radius:16px;box-shadow:0 12px 40px rgba(0,0,0,.5);background:#000}
-  .panel{margin-top:12px;display:grid;gap:8px}
+  .panel{display:grid;gap:10px;margin:8px 0 16px}
   .row{display:grid;grid-template-columns:1fr;gap:6px}
-  .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
   label{font-size:12px;opacity:.85}
   input[type="text"]{
     width:100%;padding:10px 12px;border-radius:10px;border:1px solid rgba(255,255,255,.18);
@@ -38,11 +41,9 @@
 </head>
 <body>
   <div class="wrap">
-    <div class="card">
-      <canvas id="cv" width="1080" height="2800"></canvas>
-    </div>
 
-    <!-- FORMULARIO -->
+    <!-- PASO 1 -->
+    <h2>Paso 1 · Rellena tu información</h2>
     <div class="panel">
       <div class="row">
         <label for="soy">SOY</label>
@@ -56,31 +57,32 @@
         <label for="dia">EL DÍA</label>
         <input id="dia" type="text" placeholder="DD/MM/AAAA"/>
       </div>
-      <div class="row2">
-        <div>
-          <label for="horaDe">HORA — DE LAS</label>
-          <input id="horaDe" type="text" placeholder="HH:MM"/>
-        </div>
-        <div>
-          <label for="horaA">HORA — A LAS</label>
-          <input id="horaA" type="text" placeholder="HH:MM"/>
-        </div>
+      <div class="row">
+        <label for="hora">HORA</label>
+        <input id="hora" type="text" placeholder="Ej: 4:00 p. m."/>
       </div>
       <div class="row">
         <label for="confirma">CONFIRMA AL</label>
         <input id="confirma" type="text" placeholder="Teléfono o Email"/>
       </div>
 
-      <!-- Controles de alineación (no-code) -->
+      <!-- Ajuste fino opcional (guardado en el navegador) -->
       <details>
         <summary>⚙️ Ajustar posiciones (opcional)</summary>
         <div class="ctrls" id="ctrls"></div>
-        <small>Tip: ajustes de 0.2% ≈ 5–6 px. Los cambios se guardan en tu navegador.</small>
+        <small>Tip: ajustes de 0.2% ≈ 5–6 px. Los cambios se guardan (puedes restablecer al final).</small>
       </details>
     </div>
+
+    <!-- PASO 2 -->
+    <h2>Paso 2 · Previsualiza y descarga</h2>
+    <div class="card">
+      <canvas id="cv" width="1080" height="2800"></canvas>
+    </div>
+
   </div>
 
-  <p class="note">Exporta en alta definición. Si cambias de móvil, puedes reajustar con los controles.</p>
+  <p class="note">La descarga es HD (3×). Si cambias de móvil, puedes reajustar con los controles.</p>
 
   <div class="toolbar">
     <button id="btnPng" class="main">Descargar PNG</button>
@@ -93,21 +95,19 @@
 <script>
 /* ===== CONFIGURACIÓN ===== */
 const BASE_W = 1080, BASE_H = 2800;
-const SCALE   = 3; // lienzo 3× para exportar nítido
+const SCALE   = 3;        // export retina 3×
+const TEXT_SCALE = 0.94;  // ↓ “un punto” aprox. frente a lo anterior
 
-// cajas en % (por defecto, ya bastante cerca del diseño)
+// Cajas en % (centradas en tus pastillas blancas del PNG)
 const defaults = {
   soy:      {x:0.10,y:0.437,w:0.80,h:0.047},
   nombre:   {x:0.14,y:0.606,w:0.72,h:0.049},
   dia:      {x:0.14,y:0.674,w:0.72,h:0.048},
-  hora:     {x:0.14,y:0.740,w:0.72,h:0.049},
-  confirma: {x:0.14,y:0.811,w:0.72,h:0.050},
-  horaDeLeft:0.39,  // % dentro de la caja HORA (desde la izquierda)
-  horaA_right:0.19, // % dentro de la caja HORA (desde la derecha)
-  horaWidth:0.20    // % del ancho de la caja HORA
+  hora:     {x:0.14,y:0.740,w:0.72,h:0.049},   // ahora un único campo
+  confirma: {x:0.14,y:0.811,w:0.72,h:0.050}
 };
 
-const pos = loadPositions();
+const pos = load('inv_bowling_pos') || structuredClone(defaults);
 
 const cv = document.getElementById('cv');
 cv.width  = BASE_W * SCALE;
@@ -118,59 +118,48 @@ const bg = new Image();
 bg.onload = () => draw();
 bg.src = 'bg.png';
 
-/* ===== UI de ajuste ===== */
-const fields = ['soy','nombre','dia','confirma'];
+/* ===== UI ajuste fino ===== */
+const fields = ['soy','nombre','dia','hora','confirma'];
 const ctrls = document.getElementById('ctrls');
-fields.forEach(key=>{
-  ctrls.appendChild(makeControl(key, true));
-});
-ctrls.appendChild(makeControl('hora', true, true)); // tiene subposiciones
+buildCtrls();
 
-const btnReset = document.getElementById('btnReset');
-btnReset.onclick = ()=>{ localStorage.removeItem('inv_bowling_pos'); Object.assign(pos, JSON.parse(JSON.stringify(defaults))); draw(); buildControls(); };
+document.getElementById('btnReset').onclick = ()=>{
+  save('inv_bowling_pos', null);
+  Object.assign(pos, structuredClone(defaults));
+  draw(); buildCtrls();
+};
 
-function makeControl(key, allowSize=false, isHora=false){
-  const wrap = document.createElement('div');
-  wrap.style.gridColumn = '1 / -1';
-  const title = document.createElement('div');
-  title.style.margin = '6px 0 4px'; title.style.fontWeight = '700';
-  title.textContent = `• ${key.toUpperCase()}`;
-  wrap.appendChild(title);
-
-  const grid = document.createElement('div'); grid.className = 'ctrls';
+function buildCtrls(){
+  ctrls.innerHTML='';
   const delta = 0.002; // 0.2%
+  fields.forEach(key=>{
+    const wrap = document.createElement('div');
+    wrap.style.gridColumn = '1 / -1';
+    const title = document.createElement('div');
+    title.style.margin='6px 0 4px'; title.style.fontWeight='700';
+    title.textContent = `• ${key.toUpperCase()}`;
+    wrap.appendChild(title);
 
-  function btn(txt, cb){ const b=document.createElement('button'); b.textContent=txt; b.onclick=()=>{ cb(); savePositions(); draw(); }; return b; }
-
-  if(!isHora){
+    const grid = document.createElement('div'); grid.className='ctrls';
+    function b(t, cb){ const x=document.createElement('button'); x.textContent=t; x.onclick=()=>{cb();save('inv_bowling_pos',pos);draw();}; return x; }
     grid.append(
-      btn('←', ()=> pos[key].x = clamp0to1(pos[key].x - delta)),
-      btn('→', ()=> pos[key].x = clamp0to1(pos[key].x + delta)),
-      btn('↑', ()=> pos[key].y = clamp0to1(pos[key].y - delta)),
-      btn('↓', ()=> pos[key].y = clamp0to1(pos[key].y + delta)),
-      btn('− ancho', ()=> pos[key].w = clamp0to1(pos[key].w - delta)),
-      btn('+ ancho', ()=> pos[key].w = clamp0to1(pos[key].w + delta)),
+      b('←', ()=> pos[key].x = clamp01(pos[key].x - delta)),
+      b('→', ()=> pos[key].x = clamp01(pos[key].x + delta)),
+      b('↑', ()=> pos[key].y = clamp01(pos[key].y - delta)),
+      b('↓', ()=> pos[key].y = clamp01(pos[key].y + delta)),
+      b('− ancho', ()=> pos[key].w = clamp01(pos[key].w - delta)),
+      b('+ ancho', ()=> pos[key].w = clamp01(pos[key].w + delta)),
     );
-  }else{
-    grid.append(
-      btn('DE ←', ()=> pos.horaDeLeft = clamp0to1(pos.horaDeLeft - delta)),
-      btn('DE →', ()=> pos.horaDeLeft = clamp0to1(pos.horaDeLeft + delta)),
-      btn('A  →', ()=> pos.horaA_right = clamp0to1(pos.horaA_right - delta)), /* menor = más a la derecha */
-      btn('A  ←', ()=> pos.horaA_right = clamp0to1(pos.horaA_right + delta)),
-      btn('− ancho', ()=> pos.horaWidth = clamp0to1(pos.horaWidth - delta)),
-      btn('+ ancho', ()=> pos.horaWidth = clamp0to1(pos.horaWidth + delta)),
-    );
-  }
-  const hint = document.createElement('small');
-  hint.textContent = 'Ajuste fino: 0.2% ≈ 5–6 px';
-  grid.append(hint);
-  wrap.appendChild(grid);
-  return wrap;
+    const hint = document.createElement('small');
+    hint.textContent='Ajuste fino: 0.2% ≈ 5–6 px';
+    grid.append(hint);
+    wrap.appendChild(grid);
+    ctrls.appendChild(wrap);
+  });
 }
-function buildControls(){ ctrls.innerHTML=''; fields.forEach(k=>ctrls.appendChild(makeControl(k,true))); ctrls.appendChild(makeControl('hora',true,true)); }
 
-/* ===== DIBUJO HD ===== */
-function pxBox(b){
+/* ===== DIBUJO ===== */
+function boxPx(b){
   return {
     x: Math.round(b.x * BASE_W * SCALE),
     y: Math.round(b.y * BASE_H * SCALE),
@@ -178,30 +167,29 @@ function pxBox(b){
     h: Math.round(b.h * BASE_H * SCALE)
   };
 }
-function fitText(text, maxWidth, maxPx, minPx){
-  let size = maxPx;
-  while(size > minPx){
-    ctx.font = `bold ${size}px Arial, Helvetica, sans-serif`;
-    if (ctx.measureText(text).width <= maxWidth * 0.92) break;
-    size -= 1;
+function fit(text, maxW, maxPx, minPx){
+  let s = maxPx;
+  while(s > minPx){
+    ctx.font = `bold ${s}px Arial, Helvetica, sans-serif`;
+    if (ctx.measureText(text).width <= maxW * 0.92) break;
+    s -= 1;
   }
-  return size;
+  return s;
 }
-function drawCentered(box, text, placeholder, maxFs=72, minFs=32){
-  const b = pxBox(box);
-  const t = (text||'').trim();
-  const s = t || placeholder;
+function drawCentered(b, val, placeholder, maxFs=66, minFs=30){ // ↓ tamaños base
+  const B = boxPx(b);
+  const t = (val||'').trim();
+  const show = t || placeholder;
   const color = t ? '#000' : '#777';
-  const fs = fitText(s, b.w, maxFs*SCALE, minFs*SCALE);
+  const fs = Math.round(fit(show, B.w, maxFs*SCALE*TEXT_SCALE, minFs*SCALE*TEXT_SCALE));
   ctx.font = `bold ${fs}px Arial, Helvetica, sans-serif`;
   ctx.fillStyle = color;
   ctx.textAlign = 'center';
   ctx.textBaseline = 'middle';
-  ctx.fillText(s, b.x + b.w/2, b.y + b.h/2);
+  ctx.fillText(show, B.x + B.w/2, B.y + B.h/2);
 }
 
 function draw(){
-  // fondo nítido
   ctx.clearRect(0,0,cv.width,cv.height);
   ctx.drawImage(bg, 0, 0, cv.width, cv.height);
 
@@ -210,34 +198,13 @@ function draw(){
   drawCentered(pos.soy, v('soy'), 'Escribe tu nombre');
   drawCentered(pos.nombre, v('nombre'), 'Nombre del invitado');
   drawCentered(pos.dia, v('dia'), 'DD/MM/AAAA');
-
-  // HORA: dos cajas dentro de la caja 'hora'
-  const hb = pxBox(pos.hora);
-  const hourMax = 60*SCALE, hourMin = 28*SCALE;
-
-  // DE LAS
-  const deW = Math.round(pos.horaWidth * hb.w);
-  const deX = Math.round(hb.x + pos.horaDeLeft * hb.w + deW/2);
-  const deT = (v('horaDe')||'').trim() || 'HH:MM';
-  ctx.font = `bold ${fitText(deT, deW, hourMax, hourMin)}px Arial, Helvetica, sans-serif`;
-  ctx.fillStyle = (v('horaDe')||'').trim() ? '#000' : '#777';
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText(deT, deX, hb.y + hb.h/2);
-
-  // A LAS  (se acerca moviendo 'horaA_right' a menor valor)
-  const aW = Math.round(pos.horaWidth * hb.w);
-  const aX = Math.round(hb.x + hb.w - (pos.horaA_right * hb.w) - aW/2);
-  const aT = (v('horaA')||'').trim() || 'HH:MM';
-  ctx.font = `bold ${fitText(aT, aW, hourMax, hourMin)}px Arial, Helvetica, sans-serif`;
-  ctx.fillStyle = (v('horaA')||'').trim() ? '#000' : '#777';
-  ctx.fillText(aT, aX, hb.y + hb.h/2);
-
+  drawCentered(pos.hora, v('hora'), 'HH:MM');           // un solo campo hora
   drawCentered(pos.confirma, v('confirma'), 'Teléfono o Email');
 
-  savePositions();
+  save('inv_bowling_last', {soy:v('soy'),nombre:v('nombre'),dia:v('dia'),hora:v('hora'),confirma:v('confirma')});
 }
 
-/* ===== EXPORTAR HD ===== */
+/* ===== EXPORTAR ===== */
 document.getElementById('btnPng').onclick = ()=>{
   const a = document.createElement('a');
   a.download = `invitacion-bowling-${Date.now()}.png`;
@@ -262,17 +229,19 @@ document.getElementById('btnShare').onclick = async()=>{
   }catch(e){ alert('No se pudo abrir la hoja de compartir. Usa “Descargar PNG”.'); }
 };
 
-/* ===== PERSISTENCIA Y UTILES ===== */
-function clamp0to1(v){ return Math.max(0, Math.min(1, v)); }
-function loadPositions(){
-  const saved = localStorage.getItem('inv_bowling_pos');
-  if(saved){ try{ return JSON.parse(saved); }catch(_){ } }
-  return JSON.parse(JSON.stringify(defaults));
-}
-function savePositions(){ localStorage.setItem('inv_bowling_pos', JSON.stringify(pos)); }
+/* ===== PERSISTENCIA ===== */
+function clamp01(v){ return Math.max(0, Math.min(1, v)); }
+function save(k, v){ if(v===null){ localStorage.removeItem(k); } else { localStorage.setItem(k, JSON.stringify(v)); } }
+function load(k){ try{ return JSON.parse(localStorage.getItem(k)||'null'); }catch(_){ return null; } }
 
-/* Eventos de formulario → redibuja */
-['soy','nombre','dia','horaDe','horaA','confirma'].forEach(id=>{
+/* Restaurar últimos textos */
+(function restore(){
+  const last = load('inv_bowling_last'); if(!last) return;
+  Object.entries(last).forEach(([k,val])=>{ const el=document.getElementById(k); if(el) el.value=val; });
+})();
+
+/* Eventos → redibuja */
+['soy','nombre','dia','hora','confirma'].forEach(id=>{
   const el = document.getElementById(id);
   el.addEventListener('input', draw);
   el.addEventListener('change', draw);
